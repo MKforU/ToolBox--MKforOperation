@@ -2,51 +2,94 @@ import tkinter as tk
 from tkinter import ttk
 from func_list import FUNCTION_LIST
 
-def run_selected_func(key):
-    root.destroy()
-    FUNCTION_LIST[key]["func"]()
-
-# ========== 主窗口 ==========
-root = tk.Tk()
-root.title("🧰 多功能工具箱")
-root.geometry("380x260")
-root.resizable(False, False)
-root.configure(bg="#fdf6f0")
-
-# 居中
-x = (root.winfo_screenwidth() - 380) // 2
-y = (root.winfo_screenheight() - 260) // 2
-root.geometry(f"+{x}+{y}")
-
-# 风格
-style = ttk.Style()
-style.configure("TButton", font=("微软雅黑", 11), padding=10)
-style.configure("Title.TLabel", font=("微软雅黑", 16, "bold"), background="#fdf6f0", foreground="#5b5b5b")
-
-# 标题
-title = ttk.Label(root, text="✨ 请选择功能", style="Title.TLabel")
-title.pack(pady=25)
-
-# ========== 功能按钮（圆润多巴胺）==========
-colors = ["#ffb7b7", "#b7d9ff", "#c8e6c9", "#fce19c", "#d1c4e9"]
-idx = 0
-
-for key, item in FUNCTION_LIST.items():
+def create_round_button(parent, text, command):
+    # 自定义圆角按钮样式（真正圆润无棱角）
     btn = tk.Button(
-        root,
-        text=item["name"],
-        font=("微软雅黑", 11, "bold"),
-        bg=colors[idx % len(colors)],
-        fg="#333",
+        parent,
+        text=text,
+        font=("微软雅黑", 13, "bold"),
+        bg="#f8cfe1",       # 软糯浅粉
+        fg="#be3a7e",       # 柔和豆沙红
+        activebackground="#f5b9d2",
+        activeforeground="#a32d6b",
         relief="flat",
-        width=26,
-        height=2,
-        activebackground="#ffd1d1",
-        activeforeground="#222",
-        command=lambda k=key: run_selected_func(k),
-        cursor="hand2"
+        bd=0,
+        padx=20,
+        pady=12,
+        cursor="hand2",
+        command=command
     )
-    btn.pack(pady=4)
-    idx += 1
+    # Tkinter圆角模拟（柔和无边角）
+    btn.config(
+        highlightthickness=0,
+        borderwidth=0,
+    )
+    return btn
 
-root.mainloop()
+def main():
+    root = tk.Tk()
+    root.title("🧁 MK学姐 · 软糯工具盒")
+    root.geometry("680x550")
+    root.resizable(True, True)
+    root.config(bg="#fdf0f6")  # 超柔和马卡龙浅粉底
+
+    # 窗口居中
+    x = (root.winfo_screenwidth() - 680) // 2
+    y = (root.winfo_screenheight() - 550) // 2
+    root.geometry(f"+{x}+{y}")
+
+    # ========== 标题 ==========
+    tk.Label(
+        root,
+        text="🧁 MK 学姐 · 实用工具盒",
+        font=("微软雅黑", 21, "bold"),
+        bg="#fdf0f6",
+        fg="#c74a87"
+    ).pack(pady=12)
+
+    # ========== 署名 ==========
+    tk.Label(
+        root,
+        text="✨ 制作：MK 学姐｜软糯多巴胺版 ✨",
+        font=("微软雅黑", 12, "bold"),
+        bg="#fdf0f6",
+        fg="#e16a9c"
+    ).pack(pady=4)
+
+    # ========== 功能按钮区域 ==========
+    frame = tk.Frame(root, bg="#fdf0f6")
+    frame.pack(padx=30, pady=30, fill="both", expand=True)
+
+    row = 0
+    col = 0
+    max_col = 2
+
+    for key, item in FUNCTION_LIST.items():
+        name = item["name"]
+        func = item["func"]
+
+        btn = create_round_button(frame, name, func)
+        btn.grid(row=row, column=col, padx=16, pady=16, sticky="nsew")
+
+        col += 1
+        if col >= max_col:
+            col = 0
+            row += 1
+
+    # 自适应布局
+    for c in range(max_col):
+        frame.grid_columnconfigure(c, weight=1)
+
+    # ========== 底部 ==========
+    tk.Label(
+        root,
+        text="💗 温柔好用 · MK学姐专属工具盒 💗",
+        font=("微软雅黑", 10, "bold"),
+        bg="#fdf0f6",
+        fg="#d15a8c"
+    ).pack(side="bottom", pady=18)
+
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
