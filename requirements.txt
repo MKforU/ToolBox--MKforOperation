@@ -1,5 +1,0 @@
-pymupdf
-pywin32
-pandas
-openpyxl
-xlrd
