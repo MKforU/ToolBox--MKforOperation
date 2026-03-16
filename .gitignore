@@ -1,0 +1,33 @@
+# Python 自动生成的缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# PyInstaller 打包生成的文件（不上传）
+build/
+dist/
+*.spec
+*.exe
+*.dll
+
+# VS Code 配置
+.vscode/
+*.code-workspace
+
+# 系统自动生成文件
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+
+# 个人测试文件
+test/
+*.xlsx
+*.pdf
+*.png
