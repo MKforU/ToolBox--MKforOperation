@@ -19,15 +19,8 @@
 - 显示去重统计信息：去重前数量、重复项数量、去重后数量
 - 输出文件自动命名：原文件名 + 去重结果
 
----
+### 3. 文件转 PDF
+- 多格式兼容：图片 (PNG/JPG/JPEG/GIF/BMP/TIFF)、Word (DOCX/DOC)、TXT/HTML/HTM
+- 图片转换自动适配 A4 尺寸，等比例缩放保证可读性
+- 自定义保存目录，转换完成提示具体保存路径
 
-## 依赖安装
-
-在项目目录下执行以下命令安装依赖：
-
-```bash
-pip install pymupdf
-pip install pywin32
-pip install pandas
-pip install openpyxl
-pip install xlrd
