@@ -80,7 +80,7 @@ def run():
                 f"处理成功！\n\n"
                 f"去重前：{before} 行\n"
                 f"重复项：{dup} 行\n"
-                f"去重后：{after} 行\nn"
+                f"去重后：{after} 行\n"
                 f"已保存到：\n{out_path}"
             )
             win.destroy()

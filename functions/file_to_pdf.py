@@ -6,7 +6,6 @@ from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 import pdfkit
-from docx import Document
 
 def run():
     win = tk.Tk()
@@ -68,30 +67,43 @@ def run():
         except Exception as e:
             raise Exception(f"图片转换失败：{str(e)}")
 
-    # 文档转PDF（依赖wkhtmltopdf）
-    def doc_to_pdf(doc_path, pdf_path):
+    # DOCX/DOC 转 PDF（优先用 docx2pdf，保留完整格式；回退到 COM 接口）
+    def docx_to_pdf(doc_path, pdf_path):
         try:
-            # 处理txt/html
-            if doc_path.endswith(('.txt', '.html', '.htm')):
-                pdfkit.from_file(doc_path, pdf_path)
-            # 处理docx（先转html再转pdf）
-            elif doc_path.endswith('.docx'):
-                doc = Document(doc_path)
-                html_content = "<html><body>"
-                for para in doc.paragraphs:
-                    html_content += f"<p>{para.text}</p>"
-                html_content += "</body></html>"
-                with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as f:
-                    f.write(html_content.encode('utf-8'))
-                    temp_html = f.name
-                pdfkit.from_file(temp_html, pdf_path)
-                os.unlink(temp_html)
+            from docx2pdf import convert
+            convert(doc_path, pdf_path)
+            return True
+        except ImportError:
+            pass
+
+        # 回退：用 Word COM 接口（需要本机安装 Word）
+        try:
+            import comtypes.client
+            word = comtypes.client.CreateObject('Word.Application')
+            word.Visible = False
+            doc = word.Documents.Open(os.path.abspath(doc_path))
+            doc.SaveAs(os.path.abspath(pdf_path), FileFormat=17)  # 17 = wdFormatPDF
+            doc.Close()
+            word.Quit()
             return True
         except Exception as e:
-            raise Exception(f"文档转换失败：{str(e)}")
+            raise Exception(
+                f"DOCX 转换失败：{str(e)}\n\n"
+                "请安装 docx2pdf：\npip install docx2pdf\n"
+                "（需要本机已安装 Microsoft Word）"
+            )
+
+    # TXT / HTML 转 PDF（依赖 wkhtmltopdf）
+    def text_to_pdf(src_path, pdf_path):
+        try:
+            pdfkit.from_file(src_path, pdf_path)
+            return True
+        except Exception as e:
+            raise Exception(f"文本/网页转换失败：{str(e)}\n\n请确认已安装 wkhtmltopdf 并加入 PATH。")
 
     # 核心转换逻辑
     def start_convert():
+        nonlocal selected_file
         if not selected_file:
             messagebox.showwarning("提示", "请先选择待转换文件！")
             return
@@ -107,11 +119,13 @@ def run():
             out_path = os.path.join(save_dir.get(), out_file)
 
             # 根据文件类型选择转换方式
-            ext = ext.lower()
-            if ext in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
+            ext_lower = ext.lower()
+            if ext_lower in ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']:
                 image_to_pdf(selected_file, out_path)
-            elif ext in ['.docx', '.doc', '.txt', '.html', '.htm']:
-                doc_to_pdf(selected_file, out_path)
+            elif ext_lower in ['.docx', '.doc']:
+                docx_to_pdf(selected_file, out_path)
+            elif ext_lower in ['.txt', '.html', '.htm']:
+                text_to_pdf(selected_file, out_path)
             else:
                 messagebox.showerror("错误", f"不支持的文件格式：{ext}")
                 return

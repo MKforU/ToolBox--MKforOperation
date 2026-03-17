@@ -44,8 +44,9 @@ def run():
         try:
             doc = fitz.open(pdf)
             total = len(doc)
+            matrix = fitz.Matrix(2, 2)  # 2x 放大，提升清晰度（约 144dpi）
             for i, page in enumerate(doc):
-                pix = page.get_pixmap()
+                pix = page.get_pixmap(matrix=matrix)
                 pix.save(os.path.join(sp, f"page_{i+1}.png"))
             doc.close()
             messagebox.showinfo("✅ 完成", f"转换成功！共 {total} 页")

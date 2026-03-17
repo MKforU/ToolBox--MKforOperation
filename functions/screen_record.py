@@ -92,10 +92,8 @@ class ScreenRecorder:
             time.sleep(1)
 
 
-recorder = ScreenRecorder()
-
-
 def run():
+    recorder = ScreenRecorder()  # 每次打开窗口都创建新实例，避免状态残留
     win = tk.Toplevel()
     win.title("🎬 MK学姐 - 窗口录屏工具")
     win.resizable(True, True)
