@@ -54,11 +54,9 @@
 ### 🎬 4. 窗口录屏
 > "我想录一下这个窗口的操作，但不想录到其他乱七八糟的东西……"
 
-- 支持选择**整个屏幕 / 指定窗口 / 自定义区域**录制
-- 可配置帧率、分辨率、音频来源（麦克风 / 系统声音）
-- 输出 MP4 格式，自定义保存路径和文件名
-- 图形化控制开始 / 暂停 / 停止，实时显示录制时长
-- 轻量低占用，录着录着还能干别的
+- 支持选择**指定窗口**录制
+- 输出 MP4 格式
+- 图形化控制开始 / 停止，实时显示录制时长
 
 ---
 
@@ -94,12 +92,6 @@ cd ToolBox--MKforOperation
 pip install pymupdf pillow pandas openpyxl python-docx reportlab opencv-python pywin32
 ```
 
-或者如果有 `requirements.txt`：
-
-```bash
-pip install -r requirements.txt
-```
-
 #### 4. 运行
 
 ```bash
@@ -125,6 +117,7 @@ pyinstaller main.spec
 ToolBox--MKforOperation/
 ├── main.py              # 主入口，负责渲染主界面
 ├── func_list.py         # 功能注册表，新增功能在这里登记
+├── ui_theme.py          # UI 主题和样式定义
 ├── functions/           # 各功能模块
 │   ├── pdf_to_image.py  # PDF 转图片
 │   ├── remove_duplicate.py  # 表格去重

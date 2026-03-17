@@ -2,49 +2,50 @@ import fitz
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import ctypes
+from ui_theme import RoundButton, BG, TITLE_FG, OK_BG, OK_HO, OK_FG, ENTRY_BG, BTN_FG
+
+# 4K 高分屏修复
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(2)
+except:
+    pass
 
 def run():
-    # ========== 圆角窗口 + 柔和多巴胺配色 ==========
-    win = tk.Tk()
+    win = tk.Toplevel()
     win.title("📄 PDF 转 图片 工具")
-    win.geometry("520x360")
-    win.resizable(False, False)
-    win.config(bg="#f0f9ff")
+    win.config(bg=BG)
 
-    x = (win.winfo_screenwidth() - 520) // 2
-    y = (win.winfo_screenheight() - 360) // 2
-    win.geometry(f"+{x}+{y}")
+    # 创建居中内容容器
+    container = tk.Frame(win, bg=BG)
+    container.pack(fill="both", expand=True)
 
-    # 变量
-    pdf_path = tk.StringVar(value="未选择")
+    # 内容区域，居中显示
+    content = tk.Frame(container, bg=BG)
+    content.pack(padx=20, pady=20, anchor="center")
+
+    pdf_path  = tk.StringVar(value="未选择")
     save_path = tk.StringVar(value="未选择")
 
-    # ========== 选择PDF ==========
     def select_pdf():
         f = filedialog.askopenfilename(filetypes=[("PDF 文件", "*.pdf")])
         if f: pdf_path.set(f)
 
-    # ========== 选择保存目录 ==========
     def select_save():
         d = filedialog.askdirectory()
         if d: save_path.set(d)
 
-    # ========== 开始转换 ==========
     def start():
         pdf = pdf_path.get()
-        sp = save_path.get()
-
+        sp  = save_path.get()
         if pdf == "未选择":
-            messagebox.showwarning("提示", "请选择PDF")
-            return
+            messagebox.showwarning("提示", "请选择PDF"); return
         if sp == "未选择":
-            messagebox.showwarning("提示", "请选择保存路径")
-            return
-
+            messagebox.showwarning("提示", "请选择保存路径"); return
         try:
-            doc = fitz.open(pdf)
-            total = len(doc)
-            matrix = fitz.Matrix(2, 2)  # 2x 放大，提升清晰度（约 144dpi）
+            doc    = fitz.open(pdf)
+            total  = len(doc)
+            matrix = fitz.Matrix(2, 2)
             for i, page in enumerate(doc):
                 pix = page.get_pixmap(matrix=matrix)
                 pix.save(os.path.join(sp, f"page_{i+1}.png"))
@@ -54,45 +55,31 @@ def run():
         except Exception as e:
             messagebox.showerror("❌ 错误", str(e))
 
-    # ========== 界面布局 ==========
-    tk.Label(
-        win, text="PDF 转 图片 工具",
-        font=("微软雅黑", 16, "bold"),
-        bg="#f0f9ff", fg="#4a5568"
-    ).pack(pady=20)
+    # 使用 pack 布局
+    tk.Label(content, text="📄 PDF 转 图片",
+             font=("微软雅黑", 16, "bold"), bg=BG, fg=TITLE_FG).pack(pady=(18, 8))
 
-    # 选择PDF
-    tk.Button(
-        win, text="1. 选择 PDF 文件",
-        font=("微软雅黑", 10, "bold"),
-        bg="#bae6fd", fg="#1e3a8a",
-        relief="flat", cursor="hand2",
-        width=20, height=2,
-        command=select_pdf
-    ).pack(pady=4)
+    RoundButton(content, text="1. 选择 PDF 文件", command=select_pdf,
+                width=220, height=44).pack(pady=4)
+    tk.Entry(content, textvariable=pdf_path, font=("微软雅黑", 10),
+             width=48, state="readonly", relief="flat",
+             bg=ENTRY_BG, fg=BTN_FG).pack(pady=2)
 
-    tk.Entry(win, textvariable=pdf_path, font=("微软雅黑", 10), width=45, state="readonly").pack(pady=2)
+    RoundButton(content, text="2. 选择 保存目录", command=select_save,
+                width=220, height=44).pack(pady=4)
+    tk.Entry(content, textvariable=save_path, font=("微软雅黑", 10),
+             width=48, state="readonly", relief="flat",
+             bg=ENTRY_BG, fg=BTN_FG).pack(pady=2)
 
-    # 选择保存目录
-    tk.Button(
-        win, text="2. 选择 保存目录",
-        font=("微软雅黑", 10, "bold"),
-        bg="#bae6fd", fg="#1e3a8a",
-        relief="flat", cursor="hand2",
-        width=20, height=2,
-        command=select_save
-    ).pack(pady=4)
+    RoundButton(content, text="3. ✅ 开始转换", command=start,
+                bg=OK_BG, hover=OK_HO, fg=OK_FG,
+                width=220, height=46).pack(pady=18)
 
-    tk.Entry(win, textvariable=save_path, font=("微软雅黑", 10), width=45, state="readonly").pack(pady=2)
-
-    # 开始转换
-    tk.Button(
-        win, text="3. ✅ 开始转换",
-        font=("微软雅黑", 11, "bold"),
-        bg="#4ade80", fg="white",
-        relief="flat", cursor="hand2",
-        width=22, height=2,
-        command=start
-    ).pack(pady=20)
-
-    win.mainloop()
+    # 动态计算窗口大小
+    win.update_idletasks()
+    w = max(win.winfo_reqwidth() + 40, 520)
+    h = max(win.winfo_reqheight() + 20, 420)
+    sw = win.winfo_screenwidth()
+    sh = win.winfo_screenheight()
+    win.geometry(f"{w}x{h}+{(sw-w)//2}+{(sh-h)//2}")
+    win.minsize(480, 380)
