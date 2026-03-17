@@ -95,7 +95,6 @@ def run():
     win.resizable(True, True)
     win.config(bg=BG)
     win.lift()
-    win.attributes("-topmost", True)
     win.focus_force()
 
     # 创建居中内容容器
@@ -125,7 +124,7 @@ def run():
         if sel: recorder.hwnd = int(sel.split(" | ")[0])
 
     def select_save():
-        d = filedialog.askdirectory()
+        d = filedialog.askdirectory(parent=win)
         if d:
             save_dir.set(d)
             recorder.save_path = d
@@ -200,7 +199,7 @@ def run():
     btn_frame = tk.Frame(content, bg=BG)
     btn_frame.grid(row=9, column=0, pady=(8, 20))
 
-    btn_start = RoundButton(btn_frame, text="▶️ 开始录制", command=start_thread,
+    btn_start = RoundButton(btn_frame, text="⏺️ 开始录制", command=start_thread,
                             bg=OK_BG, hover=OK_HO, fg=OK_FG, width=160, height=46)
     btn_start.grid(row=0, column=0, padx=12)
 

@@ -28,11 +28,11 @@ def run():
     save_path = tk.StringVar(value="未选择")
 
     def select_pdf():
-        f = filedialog.askopenfilename(filetypes=[("PDF 文件", "*.pdf")])
+        f = filedialog.askopenfilename(parent=win, filetypes=[("PDF 文件", "*.pdf")])
         if f: pdf_path.set(f)
 
     def select_save():
-        d = filedialog.askdirectory()
+        d = filedialog.askdirectory(parent=win)
         if d: save_path.set(d)
 
     def start():

@@ -40,13 +40,13 @@ def run():
 
     def select_file():
         nonlocal selected_file
-        fp = filedialog.askopenfilename(filetypes=SUPPORTED_TYPES)
+        fp = filedialog.askopenfilename(parent=win, filetypes=SUPPORTED_TYPES)
         if not fp: return
         file_path.set(fp)
         selected_file = fp
 
     def select_save():
-        d = filedialog.askdirectory()
+        d = filedialog.askdirectory(parent=win)
         if d: save_dir.set(d)
 
     def image_to_pdf(img_path, pdf_path):

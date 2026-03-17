@@ -32,7 +32,7 @@ def run():
 
     def select_file():
         nonlocal df, columns
-        fp = filedialog.askopenfilename(
+        fp = filedialog.askopenfilename(parent=win,
             filetypes=[("Excel 文件", "*.xlsx"), ("Excel 旧版", "*.xls")])
         if not fp: return
         file_path.set(fp)
@@ -45,7 +45,7 @@ def run():
             messagebox.showerror("错误", f"读取失败：{str(e)}")
 
     def select_save():
-        d = filedialog.askdirectory()
+        d = filedialog.askdirectory(parent=win)
         if d: save_dir.set(d)
 
     def start_remove():
