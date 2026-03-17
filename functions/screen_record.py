@@ -17,6 +17,7 @@ try:
 except:
     pass
 
+
 class ScreenRecorder:
     def __init__(self):
         self.recording = False
@@ -90,17 +91,29 @@ class ScreenRecorder:
             update_time(f"已录制：{m:02d}:{s:02d}")
             time.sleep(1)
 
+
 recorder = ScreenRecorder()
 
+
 def run():
-    win = tk.Tk()
+    win = tk.Toplevel()
     win.title("🎬 MK学姐 - 窗口录屏工具")
-    win.geometry("600x500")
     win.resizable(True, True)
     win.config(bg="#fdf0f6")
 
-    main_frame = tk.Frame(win, bg="#fdf0f6")
-    main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    # ===================== 整体用 grid 布局，行权重分配 =====================
+    win.grid_columnconfigure(0, weight=1)
+    # 各行权重：内容行 weight=0，中间弹性行 weight=1，按钮行 weight=0
+    win.grid_rowconfigure(0, weight=0)  # 标题
+    win.grid_rowconfigure(1, weight=0)  # 下拉标签
+    win.grid_rowconfigure(2, weight=0)  # 下拉框
+    win.grid_rowconfigure(3, weight=0)  # 刷新按钮
+    win.grid_rowconfigure(4, weight=0)  # 选择目录按钮
+    win.grid_rowconfigure(5, weight=0)  # 目录路径
+    win.grid_rowconfigure(6, weight=0)  # 状态文字
+    win.grid_rowconfigure(7, weight=0)  # 计时文字
+    win.grid_rowconfigure(8, weight=1)  # 弹性空白（把按钮撑到底部但不超出）
+    win.grid_rowconfigure(9, weight=0)  # 录制按钮
 
     window_list = tk.StringVar()
     save_dir = tk.StringVar(value="未选择")
@@ -143,37 +156,40 @@ def run():
         btn_stop.config(state=tk.DISABLED)
         time_text.set("")
 
-    # ===================== UI 界面 =====================
-    tk.Label(main_frame, text="🎬 MK学姐 - 窗口录屏工具", font=("微软雅黑", 18, "bold"),
-             bg="#fdf0f6", fg="#c74a87").pack(pady=10)
+    # ===================== UI 组件（全部用 grid） =====================
 
-    tk.Label(main_frame, text="选择要录制的窗口", font=("微软雅黑", 12), bg="#fdf0f6", fg="#be3a7e").pack()
-    combobox = ttk.Combobox(main_frame, textvariable=window_list, font=("微软雅黑", 11), width=55)
-    combobox.pack(pady=5)
+    tk.Label(win, text="🎬 MK学姐 - 窗口录屏工具", font=("微软雅黑", 18, "bold"),
+             bg="#fdf0f6", fg="#c74a87").grid(row=0, column=0, pady=(16, 4))
+
+    tk.Label(win, text="选择要录制的窗口", font=("微软雅黑", 12),
+             bg="#fdf0f6", fg="#be3a7e").grid(row=1, column=0, pady=(4, 0))
+
+    combobox = ttk.Combobox(win, textvariable=window_list, font=("微软雅黑", 11), width=55)
+    combobox.grid(row=2, column=0, padx=20, pady=5)
     combobox.bind("<<ComboboxSelected>>", select_window)
 
-    tk.Button(main_frame, text="🔄 刷新窗口列表", font=("微软雅黑", 11),
-              bg="#f8cfe1", fg="#be3a7e", relief="flat", command=refresh_windows).pack(pady=3)
+    tk.Button(win, text="🔄 刷新窗口列表", font=("微软雅黑", 11),
+              bg="#f8cfe1", fg="#be3a7e", relief="flat",
+              command=refresh_windows).grid(row=3, column=0, pady=4)
 
-    tk.Button(main_frame, text="📂 选择保存目录", font=("微软雅黑", 11),
-              bg="#f8cfe1", fg="#be3a7e", relief="flat", command=select_save).pack(pady=5)
+    tk.Button(win, text="📂 选择保存目录", font=("微软雅黑", 11),
+              bg="#f8cfe1", fg="#be3a7e", relief="flat",
+              command=select_save).grid(row=4, column=0, pady=4)
 
-    tk.Entry(main_frame, textvariable=save_dir, font=("微软雅黑", 10), width=50, state="readonly").pack(pady=5)
+    tk.Entry(win, textvariable=save_dir, font=("微软雅黑", 10),
+             width=50, state="readonly").grid(row=5, column=0, padx=20, pady=4)
 
-    # 状态 + 计时
-    tk.Label(main_frame, textvariable=status_text, font=("微软雅黑", 14, "bold"),
-             bg="#fdf0f6", fg="#e11d60").pack(pady=8)
-    tk.Label(main_frame, textvariable=time_text, font=("微软雅黑", 12),
-             bg="#fdf0f6", fg="#c74a87").pack()
+    tk.Label(win, textvariable=status_text, font=("微软雅黑", 14, "bold"),
+             bg="#fdf0f6", fg="#e11d60").grid(row=6, column=0, pady=(10, 2))
 
-    # 🔥 关键提示：告诉你可以缩放窗口
-    tk.Label(main_frame, text="💡 若看不见录制按钮，可拖动窗口边缘放大显示",
-             font=("微软雅黑", 10, "bold"),
-             bg="#fdf0f6", fg="#c74a87").pack(pady=5)
+    tk.Label(win, textvariable=time_text, font=("微软雅黑", 12),
+             bg="#fdf0f6", fg="#c74a87").grid(row=7, column=0, pady=(0, 4))
+
+    # row=8 是弹性空白行，不放组件
 
     # ===================== 按钮区域 =====================
-    btn_frame = tk.Frame(main_frame, bg="#fdf0f6")
-    btn_frame.pack(side=tk.BOTTOM, pady=20)
+    btn_frame = tk.Frame(win, bg="#fdf0f6")
+    btn_frame.grid(row=9, column=0, pady=(8, 20))
 
     btn_start = tk.Button(
         btn_frame, text="▶️ 开始录制", font=("微软雅黑", 12, "bold"),
@@ -190,4 +206,13 @@ def run():
     btn_stop.grid(row=0, column=1, padx=12)
 
     refresh_windows()
+
+    # 根据内容自动计算合适窗口大小，居中显示
+    win.update_idletasks()
+    w = max(win.winfo_reqwidth() + 40, 620)
+    h = max(win.winfo_reqheight() + 20, 480)
+    sw = win.winfo_screenwidth()
+    sh = win.winfo_screenheight()
+    win.geometry(f"{w}x{h}+{(sw - w) // 2}+{(sh - h) // 2}")
+
     win.mainloop()
