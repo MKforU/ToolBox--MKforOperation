@@ -71,7 +71,7 @@ def run():
              width=48, state="readonly", relief="flat",
              bg=ENTRY_BG, fg=BTN_FG).pack(pady=2)
 
-    RoundButton(content, text="3. ✅ 开始转换", command=start,
+    RoundButton(content, text="✅ 开始转换", command=start,
                 bg=OK_BG, hover=OK_HO, fg=OK_FG,
                 width=220, height=46).pack(pady=18)
 
