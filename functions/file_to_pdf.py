@@ -16,7 +16,7 @@ except:
 
 def run():
     win = tk.Toplevel()
-    win.title("📄 文件转PDF工具")
+    win.title("📄 文件 转 PDF 工具")
     win.config(bg=BG)
 
     # 创建居中内容容器
